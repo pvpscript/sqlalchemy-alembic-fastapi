@@ -12,16 +12,9 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 
-# Set env vars to be used in the ini file
-ini_env_vars = {
-    "PG_HOST": os.getenv("PG_HOST"),
-    "PG_NAME": os.getenv("PG_NAME"),
-    "PG_PASS": os.getenv("PG_PASS"),
-    "PG_USER": os.getenv("PG_USER"),
-}
-
-for k, v in ini_env_vars.items():
-    config.set_section_option(config.config_ini_section, k, v)
+# Set sqlalchemy url
+from app.resources.config import Config
+config.set_main_option("sqlalchemy.url", Config.DATABASE_URI)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

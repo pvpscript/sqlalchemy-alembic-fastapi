@@ -1,0 +1,7 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "sup3r_s3cr3t"
+    ports:
+      - "18238:5432"

@@ -1,27 +1,26 @@
-from typing import Any, Optional, List
+from typing import Optional, Any, List
 from uuid import UUID, uuid4
 from datetime import datetime
 
 from pydantic import BaseModel, Field
 
 
-class PlatformBase(BaseModel):
+class DocumentBase(BaseModel):
     pass
 
-class PlatformCreate(PlatformBase):
+class DocumentCreate(DocumentBase):
     id: Optional[UUID] = Field(default_factory=uuid4)
-    name: str 
-    description: str
+    user_id: Optional[UUID]
+    value: str 
 
-class PlatformUpdate(PlatformBase):
-    description: Optional[str]
+class DocumentUpdate(DocumentBase):
+    value: str
 
-class Platform(PlatformCreate):
+class Document(DocumentCreate):
     id: UUID
-    users: List[Any]
+    user: Any
     created_at: datetime
     modified_at: datetime
 
     class Config:
         orm_mode = True
-

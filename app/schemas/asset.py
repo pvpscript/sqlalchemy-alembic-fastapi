@@ -1,27 +1,28 @@
-from typing import Any, Optional, List
+from typing import Optional, Any, List
 from uuid import UUID, uuid4
 from datetime import datetime
 
 from pydantic import BaseModel, Field
 
 
-class PlatformBase(BaseModel):
+class AssetBase(BaseModel):
     pass
 
-class PlatformCreate(PlatformBase):
+class AssetCreate(AssetBase):
     id: Optional[UUID] = Field(default_factory=uuid4)
+    user_id: Optional[UUID]
     name: str 
-    description: str
+    price: int
 
-class PlatformUpdate(PlatformBase):
-    description: Optional[str]
+class AssetUpdate(AssetBase):
+    name: Optional[str]
+    price: Optional[int]
 
-class Platform(PlatformCreate):
+class Asset(AssetCreate):
     id: UUID
-    users: List[Any]
+    user: Any
     created_at: datetime
     modified_at: datetime
 
     class Config:
         orm_mode = True
-

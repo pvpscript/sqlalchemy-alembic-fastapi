@@ -91,7 +91,7 @@ class TestPayload(BaseModel):
     document: DocumentCreate
     assets: List[AssetCreate]
 
-@testing_router.post("/")
+@testing_router.post("/", response_model=User)
 async def test(payload: TestPayload,
                user_service: UserService = Depends(get_user_service),
                platform_service: PlatformService = Depends(get_platform_service),
@@ -126,9 +126,10 @@ async def test(payload: TestPayload,
         print(asset)
         print("----------------------------------------------------------------------------------------------------")
 
-    result_user = await user_service.get_by_id(user.id)
+    result_user = await user_service.find_by_id(user.id)
     print("----------------------------------------------------------------------------------------------------")
     print(result_user)
+    return result_user
 
 
     

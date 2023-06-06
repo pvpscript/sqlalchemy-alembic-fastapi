@@ -12,18 +12,15 @@ from uuid import uuid4, UUID
 
 from app.db.base_class import Base
 
-#from app.models.user import User 
-
-from app.models.user_platform_association import association_table
 
 @dataclass
 class Platform(Base):
     __tablename__ = 'platform'
 
-    id: Mapped[UUID] = mapped_column(sa.UUID, nullable=False, primary_key=True, default=uuid4())
+    id: Mapped[UUID] = mapped_column(sa.UUID, nullable=False, primary_key=True)
 
     users: Mapped[List['User']] = relationship(
-        secondary=association_table, back_populates='platforms'
+        secondary='user_platform_association', back_populates='platforms', lazy='selectin'
     )
 
     name: str = sa.Column(sa.String(255), nullable=False)

@@ -27,5 +27,11 @@ def create_session() -> AsyncSession:
 
 async def get_session() -> Any:
     AsyncSession = create_session()
-    async with AsyncSession() as async_session:
-        yield async_session
+    async with AsyncSession() as async_session, async_session.begin():
+        try:
+            yield async_session
+            await async_session.commit()
+        except:
+            await async_session.rollback()
+        finally:
+            await async_session.close()

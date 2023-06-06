@@ -17,14 +17,14 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self._model = model
         self._db_session = db_session
 
-    async def _get_by_id(self, id: Any) -> Optional[ModelType]:
+    async def _find_by_id(self, id: Any) -> Optional[ModelType]:
         stmt = select(self._model).where(self._model.id == id)
         result = await self._db_session.execute(stmt)
 
         return result.unique().scalars().one()
 
-    async def get_by_id(self, id: Any) -> Optional[ModelType]:
-        return await self._get_by_id(id)
+    async def find_by_id(self, id: Any) -> Optional[ModelType]:
+        return await self._find_by_id(id)
 
     async def list(self) -> List[ModelType]:
         stmt = select(self._model)
@@ -39,10 +39,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 .returning(self._model)
         )
 
-        async with self._db_session.begin():
-            result = await self._db_session.execute(stmt)
+        result = await self._db_session.execute(stmt)
 
-            return result.unique().scalars().one()
+        return result.unique().scalars().one()
 
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         stmt = (
@@ -52,13 +51,11 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 .returning(self._model)
         )
 
-        async with self._db_session.begin():
-            result = await self._db_session.execute(stmt)
+        result = await self._db_session.execute(stmt)
 
-            return result.unique().scalars().one_or_none()
+        return result.unique().scalars().one_or_none()
 
     async def delete(self, id: Any) -> None:
         stmt = delete(self._model).where(self._model.id == id)
 
-        async with self._db_session.begin():
-            await self._db_session.execute(stmt)
+        await self._db_session.execute(stmt)

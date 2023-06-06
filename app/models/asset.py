@@ -19,7 +19,7 @@ class Asset(Base):
 
     id: Mapped[UUID] = mapped_column(sa.UUID, nullable=False, primary_key=True)
     user_id: Mapped[UUID] = mapped_column(sa.ForeignKey('user.id'))
-    user: Mapped['User'] = relationship(back_populates='assets', lazy='joined')
+    user: Mapped['User'] = relationship(back_populates='assets', lazy='selectin')
 
     name: str = sa.Column(sa.String(255), nullable=False, unique=True)
     price: int = sa.Column(sa.Integer, nullable=False)

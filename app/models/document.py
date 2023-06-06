@@ -19,7 +19,7 @@ class Document(Base):
 
     id: Mapped[UUID] = mapped_column(sa.UUID, nullable=False, primary_key=True)
     user_id: Mapped[UUID] = mapped_column(sa.ForeignKey('user.id'))
-    user: Mapped['User'] = relationship(back_populates='document', lazy='joined')
+    user: Mapped['User'] = relationship(back_populates='document', lazy='selectin')
 
     value: str = sa.Column(sa.String(20), nullable=False, unique=True)
 

@@ -18,52 +18,47 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self._db_session = db_session
 
     async def _get_by_id(self, id: Any) -> Optional[ModelType]:
-        async with self._db_session() as session:
-            stmt = select(self._model).where(self._model.id == id)
-            result = await session.execute(stmt)
+        stmt = select(self._model).where(self._model.id == id)
+        result = await self._db_session.execute(stmt)
 
-            return result.scalars().one()
+        return result.unique().scalars().one()
 
     async def get_by_id(self, id: Any) -> Optional[ModelType]:
         return await self._get_by_id(id)
 
     async def list(self) -> List[ModelType]:
-        async with self._db_session() as session:
-            stmt = select(self._model)
-            result = await session.execute(stmt)
+        stmt = select(self._model)
+        result = await self._db_session.execute(stmt)
 
-            return result.scalars().all()
+        return result.scalars().all()
 
     async def save(self, obj: CreateSchemaType) -> ModelType:
-        async with self._db_session() as session:
-            stmt = (
-                insert(self._model)
-                    .values(**obj.dict())
-                    .returning(self._model)
-            )
+        stmt = (
+            insert(self._model)
+                .values(**obj.dict())
+                .returning(self._model)
+        )
 
-            async with session.begin():
-                result = await session.execute(stmt)
+        async with self._db_session.begin():
+            result = await self._db_session.execute(stmt)
 
-                return result.scalars().one()
+            return result.unique().scalars().one()
 
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
-        async with self._db_session() as session:
-            stmt = (
-                update(self._model)
-                    .values(**obj.dict(exclude_unset=True))
-                    .where(self._model.id == id)
-                    .returning(self._model)
-            )
+        stmt = (
+            update(self._model)
+                .values(**obj.dict(exclude_unset=True))
+                .where(self._model.id == id)
+                .returning(self._model)
+        )
 
-            async with session.begin():
-                result = await session.execute(stmt)
+        async with self._db_session.begin():
+            result = await self._db_session.execute(stmt)
 
-                return result.scalars().one_or_none()
+            return result.unique().scalars().one_or_none()
 
     async def delete(self, id: Any) -> None:
-        async with self._db_session() as session:
-            stmt = delete(self._model).where(self._model.id == id)
+        stmt = delete(self._model).where(self._model.id == id)
 
-            async with session.begin():
-                await session.execute(stmt)
+        async with self._db_session.begin():
+            await self._db_session.execute(stmt)
